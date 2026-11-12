@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>纪念牛奶-Milk</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC",Microsoft YaHei,sans-serif;}
+body{
+  background-color: #080818;
+  color:#e8e8e8;
+  line-height:1.7;
+  position:relative;
+  overflow-x:hidden;
+  background-image: radial-gradient(circle at 20% 30%, #141430 0%, transparent 40%),
+                    radial-gradient(circle at 80% 70%, #101028 0%, transparent 40%);
+}
+/* 星空背景星星 */
+.star-container{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:0;
+}
+.star{
+  position:absolute;
+  background:#fff;
+  border-radius:50%;
+  opacity:0.7;
+  animation:twinkle 3s infinite alternate;
+}
+@keyframes twinkle{
+  0%{opacity:0.2;}
+  100%{opacity:0.9;}
+}
+/* 花瓣飘落容器 */
+#petalContainer{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:1;
+}
+.petal{
+  position:absolute;
+  background:#b8a8c8;
+  border-radius:50% 0 50% 50%;
+  opacity:0.45;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  0%{transform:translateY(-20px) rotate(0deg);opacity:0.5;}
+  100%{transform:translateY(100vh) rotate(360deg);opacity:0;}
+}
+.container{
+  max-width:900px;
+  margin:0 auto;
+  padding:40px 20px;
+  position:relative;
+  z-index:2;
+}
+section{
+  background:rgba(245,242,248,0.18);
+  border-radius:18px;
+  padding:30px;
+  margin-bottom:30px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.25);
+  backdrop-filter: blur(6px);
+}
+h2{
+  color:#d4c8e8;
+  margin-bottom:20px;
+  text-align:center;
+  font-weight:500;
+}
+/* 音频播放器 */
+.music-box{
+  background:rgba(40,35,60,0.7);
+  border-radius:16px;
+  padding:20px;
+  text-align:center;
+}
+.music-title{
+  color:#d4c8e8;
+  margin-bottom:12px;
+  font-size:16px;
+}
+.music-controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  justify-content:center;
+}
+.music-controls button{
+  border:none;
+  background:#645880;
+  color:#f0edf7;
+  padding:6px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.music-controls input[type=range]{
+  width:120px;
+}
+/* 介绍板块 */
+.intro{
+  text-align:center;
+}
+.intro h1{
+  color:#e0d8f0;
+  margin-bottom:12px;
+}
+.intro p{
+  max-width:600px;
+  margin:0 auto;
+  color:#d8d2e8;
+}
+/* 轮播 - 修改竖图适配，不再裁剪下半部分 */
+.slider-wrap{
+  position:relative;
+  overflow:hidden;
+  border-radius:16px;
+  background:#0a0a1a;
+}
+.slider{
+  display:flex;
+  transition:transform 0.5s ease;
+}
+.slider-item{
+  min-width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.slider-item img{
+  width:100%;
+  max-height:70vh;
+  object-fit:contain;
+  cursor:pointer;
+  background:#0a0a1a;
+}
+.slider-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:40px;height:40px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.25);
+  color:#fff;
+  border:none;
+  font-size:20px;
+  cursor:pointer;
+  z-index:2;
+}
+.prev{left:12px;}
+.next{right:12px;}
+/* 大图弹窗 */
+.lightbox{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  z-index:100;
+  align-items:center;
+  justify-content:center;
+}
+.lightbox img{max-width:90%;max-height:90vh;}
+.lightbox .close{
+  position:absolute;
+  top:20px;right:20px;
+  color:white;font-size:32px;
+  cursor:pointer;
+}
+/* 时间轴 */
+.timeline{
+  position:relative;
+  padding-left:24px;
+}
+.timeline::before{
+  content:"";
+  position:absolute;
+  left:6px;top:0;bottom:0;
+  width:2px;background:#7c6b9c;
+}
+.timeline-item{
+  position:relative;
+  margin-bottom:26px;
+}
+.timeline-item::before{
+  content:"";
+  position:absolute;
+  left:-22px;top:6px;
+  width:14px;height:14px;
+  border-radius:50%;
+  background:#a08cbf;
+}
+.timeline-date{
+  color:#c4b4e0;
+  font-weight:500;
+  margin-bottom:4px;
+}
+/* 喜好卡片 */
+.like-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px;
+}
+.like-card{
+  background:rgba(50,42,75,0.65);
+  padding:18px;border-radius:14px;
+  text-align:center;
+  color:#e2ddf0;
+}
+/*记忆里的你网格*/
+.memory-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:16px;
+}
+.memory-card{
+  background:rgba(50,42,75,0.45);
+  border-radius:12px;
+  padding:12px;
+  text-align:center;
+}
+.memory-card img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:contain;
+  border-radius:8px;
+}
+/* 蜡烛祈福 */
+.candle-wrap{
+  text-align:center;
+}
+.candle{
+  width:60px;height:90px;
+  margin:0 auto 12px;
+  position:relative;
+  cursor:pointer;
+}
+.candle-body{
+  width:40px;height:60px;
+  background:#d8d2e8;
+  border-radius:4px 4px 0 0;
+  margin:0 auto;
+}
+.flame{
+  width:20px;height:30px;
+  background:radial-gradient(ellipse,#ffdd70,#ff9b48,transparent);
+  border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+  margin:0 auto;
+  opacity:0;
+  transition:opacity 0.4s;
+  animation:flicker 0.8s infinite alternate;
+}
+.flame.on{opacity:1;}
+@keyframes flicker{
+  0%{transform:scale(1);}
+  100%{transform:scale(1.1);}
+}
+.candle-tip{
+  color:#c4b4e0;
+}
+</style>
+</head>
+<body>
+<div class="star-container" id="starBox"></div>
+<div id="petalContainer"></div>
+<div class="container">
+  <!-- 音频播放器 -->
+  <section class="music-box">
+    <div class="music-title">🎵 给宝贝的歌</div>
+    <audio id="bgMusic" preload="metadata">
+      <source src="assets/music/song.mp3" type="audio/mpeg">
+    
+    <div class="music-controls">
+      <button id="playBtn">▶ 播放</button>
+      <input type="range" id="progress" value="0" min="0" max="100">
+      <span id="timeText">00:00</span>
+      <button id="loopBtn">🔁 循环</button>
+      <input type="range" id="volume" min="0" max="100" value="60">
+    </div>
+  </section>
+
+  <!-- 介绍 -->
+  <section class="intro">
+    <h1>牛奶-Milk</h1>
+    <p>
+      谢谢你来到我们家，谢谢你陪伴我们的1986天，愿你在汪星天天有零食，夜夜安稳睡。
+    </p>
+  </section>
+
+  <!-- 图片轮播 -->
+  <section>
+    <h2>📷 回忆相册</h2>
+    <div class="slider-wrap">
+      <button class="slider-btn prev">&lt;</button>
+      <div class="slider" id="slider">
+        <div class="slider-item"><img src="assets/img/p1.jpg" alt="照片1" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p2.jpg" alt="照片2" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p3.jpg" alt="照片3" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p4.jpg" alt="照片4" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p5.jpg" alt="照片5" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p6.jpg" alt="照片6" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p7.jpg" alt="照片7" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p8.jpg" alt="照片8" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p9.jpg" alt="照片9" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p10.jpg" alt="照片10" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p11.jpg" alt="照片11" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p12.jpg" alt="照片12" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p13.jpg" alt="照片13" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p14.jpg" alt="照片14" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p15.jpg" alt="照片15" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p16.jpg" alt="照片16" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p17.jpg" alt="照片17" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p18.jpg" alt="照片18" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p19.jpg" alt="照片19" class="slide-img"></div>
+        <div class="slider-item"><img src="assets/img/p20.jpg" alt="照片20" class="slide-img"></div>
+      </div>
+      <button class="slider-btn next">&gt;</button>
+    </div>
+  </section>
+
+  <!-- 时间轴 -->
+  <section>
+    <h2>🕊️ 我们的时光</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2021.4.13</div>
+        <div>小小一只来到这个世界，兄弟姐妹就你最皮</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2021.9.6</div>
+        <div>最漂亮的一张正面免冠照，你耳朵表情都很到位</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2021.9.9</div>
+        <div>第一次去步行街，你和一只柯基互动挺欢</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2021.9.22</div>
+        <div>我们给你剪毛，剪完之后像一只狐狸</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2021.12.31</div>
+        <div>带你去白鹿小学接学生，你眼神专注盯着大门</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2022.1.16</div>
+        <div>你去了最不想去的宠物医院，去势又拔牙</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2022.1.27</div>
+        <div>你此生最贵的一次美容，十分贵宾</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2022.2.16</div>
+        <div>威逼利诱之下，你在跑步机上运动了20分钟，一脸不愿意</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2022.10.19</div>
+        <div>阳台上，阳光里，你是一只发光狗</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2024.12.8</div>
+        <div>滨江公园，你变成脱缰野狗，尽情撒欢</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2026.9.19</div>
+        <div>你遭遇车祸，去了汪星</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 它喜欢的小事 -->
+  <section>
+    <h2>💛 宝贝的小喜好</h2>
+    <div class="like-grid">
+      <div class="like-card">爱吃：<br>西葫芦，肉骨头，小饼干</div>
+      <div class="like-card">爱玩：<br>绒绒球，袜子</div>
+      <div class="like-card">喜欢的动作：<br>两脚站立，左右手互搏</div>
+      <div class="like-card">最喜欢的地方：<br>公园，麦田</div>
+      <div class="like-card">擅长攻击：<br>汪汪叫</div>
+      <div class="like-card">擅长防守：<br>扭头就跑</div>
+      <div class="like-card">不良爱好：<br>看见死咸鱼喜欢去蹭</div>
+    </div>
+  </section>
+
+  <!--记忆里的你-->
+  <section>
+    <h2>🤍 记忆里的你</h2>
+    <div class="memory-grid">
+      <div class="memory-card"><img src="assets/img/memorypict (1).png" alt=""></div>
+      <div class="memory-card"><img src="assets/img/memorypict (2).png" alt=""></div>
+      <div class="memory-card"><img src="assets/img/memorypict (3).png" alt=""></div>
+      <div class="memory-card"><img src="assets/img/memorypict (4).png" alt=""></div>
+      <div class="memory-card"><img src="assets/img/memorypict (5).png" alt=""></div>
+      <div class="memory-card"><img src="assets/img/memorypict (6).png" alt=""></div>
+      <div class="memory-card"><img src="assets/img/memorypict (7).png" alt=""></div>
+      <div class="memory-card"><img src="assets/img/memorypict (8).png" alt=""></div>
+      <div class="memory-card"><img src="assets/img/memorypict (9).png" alt=""></div>
+      <div class="memory-card"><img src="assets/img/memorypict (10).png" alt=""></div>
+
+    </div>
+  </section>
+
+  <!-- 点蜡烛祈福 -->
+  <section>
+    <h2>🕯️ 点一支蜡烛</h2>
+    <div class="candle-wrap">
+      <div class="candle" id="candleBox">
+        <div class="flame" id="flame"></div>
+        <div class="candle-body"></div>
+      </div>
+      <p class="candle-tip">点击蜡烛，愿它在汪星平安快乐</p>
+    </div>
+  </section>
+</div>
+
+<!-- 大图弹窗 -->
+<div class="lightbox" id="lightbox">
+  <span class="close">&times;</span>
+  <img id="lightImg" src="">
+</div>
+
+<script>
+// ========== 星空星星生成 ==========
+const starBox = document.getElementById("starBox");
+for(let i=0;i<120;i++){
+  const s = document.createElement("div");
+  s.className="star";
+  const size = Math.random()*2+0.5;
+  s.style.width = size+"px";
+  s.style.height = size+"px";
+  s.style.left = Math.random()*100+"%";
+  s.style.top = Math.random()*100+"%";
+  s.style.animationDelay = Math.random()*3+"s";
+  starBox.appendChild(s);
+}
+
+// ========== 花瓣飘落 ==========
+const petalContainer = document.getElementById("petalContainer");
+function createPetal(){
+  const p = document.createElement("div");
+  p.className="petal";
+  const size = Math.random()*8+4;
+  p.style.width = size+"px";
+  p.style.height = size+"px";
+  p.style.left = Math.random()*100+"%";
+  p.style.animationDuration = (Math.random()*7+6)+"s";
+  petalContainer.appendChild(p);
+  setTimeout(()=>p.remove(),13000);
+}
+setInterval(createPetal,600);
+
+// ========== 音频播放器 ==========
+const audio = document.getElementById("bgMusic");
+const playBtn = document.getElementById("playBtn");
+const progress = document.getElementById("progress");
+const timeText = document.getElementById("timeText");
+const loopBtn = document.getElementById("loopBtn");
+const volumeCtrl = document.getElementById("volume");
+let loopState = false;
+volumeCtrl.value = 60;
+audio.volume = 0.6;
+playBtn.onclick = ()=>{
+  if(audio.paused){audio.play();playBtn.textContent="⏸ 暂停";}
+  else{audio.pause();playBtn.textContent="▶ 播放";}
+}
+loopBtn.onclick = ()=>{
+  loopState = !loopState;
+  audio.loop = loopState;
+  loopBtn.textContent = loopState ? "🔁 已循环" : "🔁 循环";
+}
+volumeCtrl.oninput = ()=>{audio.volume = volumeCtrl.value / 100;}
+audio.ontimeupdate = ()=>{
+  progress.value = audio.currentTime / audio.duration * 100 || 0;
+  const m = Math.floor(audio.currentTime/60).toString().padStart(2,'0');
+  const s = Math.floor(audio.currentTime%60).toString().padStart(2,'0');
+  timeText.innerText = m+":"+s;
+}
+progress.oninput = ()=>{
+  audio.currentTime = progress.value / 100 * audio.duration;
+}
+
+// ========== 轮播 ==========
+const slider = document.getElementById("slider");
+const prevBtn = document.querySelector(".prev");
+const nextBtn = document.querySelector(".next");
+let slideIndex = 0;
+const totalSlide = slider.children.length;
+function refreshSlide(){slider.style.transform = `translateX(-${slideIndex*100}%)`;}
+prevBtn.onclick = ()=>{slideIndex = (slideIndex-1+totalSlide)%totalSlide;refreshSlide();}
+nextBtn.onclick = ()=>{slideIndex = (slideIndex+1)%totalSlide;refreshSlide();}
+setInterval(()=>{slideIndex=(slideIndex+1)%totalSlide;refreshSlide();},4500);
+
+// ========== 大图弹窗 ==========
+const lightbox = document.getElementById("lightbox");
+const lightImg = document.getElementById("lightImg");
+const closeLight = document.querySelector(".close");
+document.querySelectorAll(".slide-img").forEach(img=>{
+  img.onclick = ()=>{
+    lightbox.style.display="flex";
+    lightImg.src = img.src;
+  }
+})
+closeLight.onclick = ()=>lightbox.style.display="none";
+lightbox.onclick = (e)=>{if(e.target===lightbox) lightbox.style.display="none";}
+
+// ========== 蜡烛 ==========
+const flame = document.getElementById("flame");
+document.getElementById("candleBox").onclick = ()=>{
+  flame.classList.toggle("on");
+}
+</script>
+</body>
+</html>
