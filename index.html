@@ -270,12 +270,9 @@ h2{
 <div class="star-container" id="starBox"></div>
 <div id="petalContainer"></div>
 <div class="container">
-  <!-- 音频播放器 -->
+  <!-- 音频播放器【修复：audio标签闭合，控件正常显示】 -->
   <section class="music-box">
     <div class="music-title">🎵 给宝贝的歌</div>
-    <audio id="bgMusic" preload="metadata">
-      <source src="assets/music/nianxia.mp3" type="audio/mpeg">
-    
     <div class="music-controls">
       <button id="playBtn">▶ 播放</button>
       <input type="range" id="progress" value="0" min="0" max="100">
@@ -283,6 +280,9 @@ h2{
       <button id="loopBtn">🔁 循环</button>
       <input type="range" id="volume" min="0" max="100" value="60">
     </div>
+    <audio id="bgMusic" preload="metadata">
+      <source src="assets/music/nianxia.mp3" type="audio/mpeg">
+    
   </section>
 
   <!-- 介绍 -->
